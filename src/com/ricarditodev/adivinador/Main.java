@@ -6,27 +6,28 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) {
         Scanner entrada = new Scanner(System.in); //lectura de entrada
-        Random numeros = new Random(); //clase para generar numeros aleatorios
+        Random numeros = new Random(); //generador de numeros aleatorios
 
-        //se genera un numero entre 1 y 100
-        int numeroSecret = numeros.nextInt(100) + 1;
-        int valorUsuario;
-        boolean acierto = false;
+        //genero un numero entre 1 y 100
+        int numeroSecreto = numeros.nextInt(100) + 1;
+        int valorLeido;
+        boolean adivino = false;
 
-        for (int i = 1; i <= 10; i++) {
-            System.out.print("Intento " + i + " >> ");
-            valorUsuario = entrada.nextInt();
+        for (int intento = 1; intento <= 10; intento++) {
+            //muestro mensaje al usuario
+            System.out.print("Intento " + intento + ">> ");
+            valorLeido = entrada.nextInt();
             entrada.nextLine();
 
-            if (valorUsuario == numeroSecret) {
-                System.out.print("Acertaste");
-                acierto = true;
+            if (valorLeido == numeroSecreto) {
+                System.out.print("Acertaste el número");
+                adivino = true;
                 break;
             }
-        }
+        } //fin del bucle
 
-        if (!acierto) {
-            System.out.println("No acertaste, el numero secreto era: " + numeroSecret);
+        if (!adivino) {
+            System.out.print("No adivinaste el número " + numeroSecreto);
         }
     }
 }
