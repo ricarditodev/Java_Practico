@@ -30,7 +30,7 @@ public class Main {
             pensador[i] = caracterPensador; //guardamos en cada posicion del arreglo pensador el caracter generado previamente
         }
 
-        System.out.println("MasterMind V1.0");
+        System.out.println("MasterMind V2.0");
         System.out.println("Dispones de 10 intentos para adivinar el código.");
 
         //hacemos 10 intentos donde el usuario tiene que adivinar el codigo
