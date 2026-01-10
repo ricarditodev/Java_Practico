@@ -1,4 +1,4 @@
-package motor;
+package com.ricarditodev.Buscaminas.src.main.java.motor;
 
 /**
  * Representa una posición dada por dos corrdenadas: fila y columna.
