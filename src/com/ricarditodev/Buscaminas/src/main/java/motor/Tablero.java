@@ -1,4 +1,6 @@
-package motor;
+package com.ricarditodev.Buscaminas.src.main.java.motor;
+
+import com.ricarditodev.Buscaminas.src.main.java.motor.*;
 
 /**
  * Representa un tablero del juego Buscaminas como una grilla de objetos de tipo
@@ -9,10 +11,10 @@ package motor;
 public class Tablero {
         //Valores predefinidos para las dimensiones maximas y minimas del tablero
     public static byte
-        MIN_ANCHO=5,
-        MIN_LARGO=5,
-        MAX_ANCHO=100,
-        MAX_LARGO=100; 
+        MIN_ANCHO = 5, //filas
+        MIN_LARGO = 5, //columnas
+        MAX_ANCHO = 100, //filas
+        MAX_LARGO = 100; //columnas
 
     //El tablero: una grilla con topes (tal como hicimos en el Juego de la Vida).
     private final Celda[][] celdas;
@@ -21,13 +23,41 @@ public class Tablero {
     /**
      * Crea un nuevo tablero con las dimensiones indicadas. Las celdas del mismo
      * estarán todas OCULTAS y sin minas. Las cantidades de filas y columnas deben
-     * ser mayores que MIN_ANCHO y MIN_LARGO respectivamente, de lo contrario se
+     * ser mayores que MIN_ANCHO y MIN_LARGO, menores que MAX_ANCHO y MAX_LARGO respectivamente, de lo contrario se
      * establecerán con dichos valores.
      * @param cantidadFilas La cantidad de filas que contendrá el tablero.
      * @param cantidadColumnas La cantidad de columnas que contendrá el tablero.
      */
     public Tablero(byte cantidadFilas, byte cantidadColumnas) {
-        
+        byte filas; //variable auxiliar para asignar las filas a las celdas
+        byte columnas; //variable auxiliar para asignar las columnas a las celdas
+
+        //si la fila ingresada es menor que ancho, seteamos filas en el ancho mínimo
+        if (cantidadFilas < MIN_ANCHO) {
+            filas = MIN_ANCHO;
+        } else if (cantidadFilas > MAX_ANCHO) {
+            filas = MAX_ANCHO;
+        } else {
+            filas = cantidadFilas;
+        }
+
+        if (cantidadColumnas < MIN_LARGO) {
+            columnas = MIN_LARGO;
+        } else if (cantidadColumnas > MAX_LARGO) {
+            columnas = MAX_LARGO;
+        } else {
+            columnas = cantidadColumnas;
+        }
+
+        this.celdas = new Celda[filas][columnas];
+
+        for (int i = 0; i < celdas.length; i++) {
+            for (int j = 0; j < celdas[i].length; j++) {
+                this.celdas[i][j] = new Celda(false, Celda.EstadoCelda.OCULTA, (byte) 0);
+            }
+        }
+
+        this.cantidadMinas = 0;
     }
     
     /**
@@ -35,7 +65,7 @@ public class Tablero {
      * @return La cantidad de columnas en el tablero.
      */
     public byte getLargo() {
-        
+        return (byte) this.celdas[0].length;
     }
     
     /**
@@ -43,7 +73,7 @@ public class Tablero {
      * @return La cantidad de filas del tablero.
      */
     public byte getAncho() {
-        
+        return (byte) this.celdas.length;
     }
     
     /**
@@ -53,7 +83,7 @@ public class Tablero {
      * @return TRUE si la posición es adecuada en el tablero, FALSE si no lo es.
      */
     public boolean esPosicionValida(byte fila, byte columna) {
-         
+         return fila >= 0 && fila < this.celdas.length && columna >= 0 && columna < this.celdas[0].length;
     }
     
     /**
@@ -69,7 +99,40 @@ public class Tablero {
      * @param columna La columna en que está la celda.
      */
     public void asignarBomba(boolean tieneBomba, byte fila, byte columna) {
-        
+        Celda celdaCircundante;
+        byte minasActuales;
+
+        if (celdas[fila][columna].tieneBomba() == tieneBomba) {
+            return;
+        }
+
+        celdas[fila][columna].setTieneBomba(tieneBomba);
+
+        for (int i = fila - 1; i <= fila + 1; i++) {
+            for (int j = columna - 1; j <= columna + 1; j++) {
+                if (esPosicionValida((byte) i, (byte) j)) {
+                    if (i == fila && j == columna) {
+                          continue;
+                    }
+
+                    celdaCircundante = this.celdas[i][j];
+
+                    minasActuales = celdaCircundante.getBombasCircundantes();
+
+                    if (tieneBomba) {
+                        celdaCircundante.setBombasCircundantes((byte) (minasActuales + 1));
+                    } else {
+                        celdaCircundante.setBombasCircundantes((byte) (minasActuales - 1));
+                    }
+                }
+            }
+        }
+
+        if (tieneBomba) {
+            cantidadMinas++;
+        } else {
+            cantidadMinas--;
+        }
     }
     
     /**
@@ -80,7 +143,11 @@ public class Tablero {
      * @return La celda en la posición dada.
      */
     public Celda getCelda(byte fila, byte columna) {
-        
+        if (esPosicionValida(fila, columna)) {
+            return celdas[fila][columna];
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -88,7 +155,15 @@ public class Tablero {
      * @return La cantidad de celdas en el tablero.
      */
     public int getCantidadCeldas() {
-        
+        int cantidadCeldas = 0;
+
+        for (int i = 0; i < this.celdas.length; i++) {
+            for (int j = 0; j < celdas[i].length; j++) {
+                cantidadCeldas++;
+            }
+        }
+
+        return cantidadCeldas;
     }
     
     /**
@@ -96,6 +171,6 @@ public class Tablero {
      * @return La cantidad de minas en el tablero.
      */
     public int getCantidadMinas() {
-        
+        return cantidadMinas;
     }
 }
