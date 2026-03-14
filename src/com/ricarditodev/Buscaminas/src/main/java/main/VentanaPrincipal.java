@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package main;
+package com.ricarditodev.Buscaminas.src.main.java.main;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,7 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.event.MouseInputListener;
-import motor.*;
+import com.ricarditodev.Buscaminas.src.main.java.motor.*;
 ;
 
 /**

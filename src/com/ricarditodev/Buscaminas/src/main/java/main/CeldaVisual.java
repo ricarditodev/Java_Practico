@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package main;
+package com.ricarditodev.Buscaminas.src.main.java.main;
 
 import javax.swing.JButton;
-import motor.Posicion;
+import com.ricarditodev.Buscaminas.src.main.java.motor.Posicion;
 
 /**
  *

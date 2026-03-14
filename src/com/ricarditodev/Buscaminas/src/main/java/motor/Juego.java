@@ -1,4 +1,4 @@
-package motor;
+package com.ricarditodev.Buscaminas.src.main.java.motor;
 
 import java.util.Random;
 
@@ -24,9 +24,12 @@ public class Juego {
     //El tipo Juego, que unifica todos los anteriores.
     private EstadoJuego estado;
     private final Tablero tablero;
-    private final int bombas;          // cantidad de bombas en el tablero 
-    private int marcadas;        // cantidad de celdas marcadas 
-    private int descubiertas;    // cantidad de celdas descubiertas 
+    private final int bombas;          // cantidad de bombas en el tablero
+    private int marcadas;        // cantidad de celdas marcadas
+    private int descubiertas;    // cantidad de celdas descubiertas
+
+    private Posicion[] pendientesPorDescubrir;
+    private int tope;
     
     /**
      * Crea un nuevo juego con estado JUGANDO, las dimensiones de tablero dadas
@@ -42,13 +45,34 @@ public class Juego {
      * @param cantidadBombas La cantidad de minas, entre 0 y cantidadFilas*cantidadColumnas.
      */
     public Juego(byte cantidadFilas, byte cantidadColumnas, int cantidadBombas) {
-        
-    }
-    
-    public EstadoJuego getEstado() {
+        this.estado = EstadoJuego.JUGANDO;
 
+        if ((cantidadFilas < Tablero.MIN_ANCHO || cantidadFilas > Tablero.MAX_ANCHO) || (cantidadColumnas < Tablero.MIN_LARGO || cantidadColumnas > Tablero.MAX_LARGO)) {
+            this.tablero = new Tablero(Tablero.MIN_ANCHO, Tablero.MIN_LARGO);
+        } else {
+            this.tablero = new Tablero(cantidadFilas, cantidadColumnas);
+        }
+
+        if (cantidadBombas > this.getFilas() * this.getColumnas() || cantidadBombas < 0) {
+            this.bombas = MINAS_FACIL;
+        } else {
+            this.bombas = cantidadBombas;
+        }
+
+        this.pendientesPorDescubrir = new Posicion[this.getFilas() * this.getColumnas()];
+        this.tope = -1;
+
+        repartirMinas();
     }
-    
+
+    /**
+     *
+     * @return Retorna el estado del juego.
+     */
+    public EstadoJuego getEstado() {
+        return this.estado;
+    }
+
     /**
      * Retorna el estado de la celda en la posicón p dada.
      * <br><br><b>PRECONDICION:</b> La posicíon es válida.
@@ -56,7 +80,7 @@ public class Juego {
      * @return El estado de la celda en la posicón p.
      */
     public Celda.EstadoCelda getEstadoCelda(Posicion p) {
-
+        return this.tablero.getCelda(p.getFila(), p.getColumna()).getEstado();
     }
     
     /**
@@ -66,7 +90,7 @@ public class Juego {
      * @return TRUE si tiene mina, FALSE si no.
      */
     public boolean tieneBomba(Posicion p) {
-
+        return this.tablero.getCelda(p.getFila(), p.getColumna()).tieneBomba();
     }
     
     /**
@@ -76,7 +100,7 @@ public class Juego {
      * @return La cantidad de minas que circundan a la celda en cuestión.
      */
     public int getMinasCircundantes(Posicion p) {
-        
+        return this.tablero.getCelda(p.getFila(), p.getColumna()).getBombasCircundantes();
     }
     
     /**
@@ -84,7 +108,7 @@ public class Juego {
      * @return La cantidad de filas del tablero.
      */
     public byte getFilas() {
-        
+        return this.tablero.getAncho();
     }
     
     /**
@@ -92,7 +116,7 @@ public class Juego {
      * @return La cantidad de columnas.
      */
     public byte getColumnas() {
-        
+        return this.tablero.getLargo();
     }
     
     /**
@@ -100,7 +124,7 @@ public class Juego {
      * @return La cantidad de minas.
      */
     public int getMinas() {
-        
+        return this.tablero.getCantidadMinas();
     }
     
     /**
@@ -108,7 +132,7 @@ public class Juego {
      * @return La cantidad de celdas marcadas.
      */
     public int getCeldasMarcadas() {
-        
+        return this.marcadas;
     }
     
     /**
@@ -116,7 +140,7 @@ public class Juego {
      * @return La cantidad de celdas descubiertas.
      */
     public int getCeldasDescubiertas() {
-        
+        return this.descubiertas;
     }
     
     /**
@@ -143,7 +167,70 @@ public class Juego {
      * @param p La posición de la celda a descubrir.
      */
     public void descubrir(Posicion p) {
-        
+        int celdasSeguras = this.getFilas() * this.getColumnas() - this.getMinas();
+        tope = - 1;
+
+        if (this.tablero.getCelda(p.getFila(), p.getColumna()).getEstado() == Celda.EstadoCelda.DESCUBIERTA || this.tablero.getCelda(p.getFila(), p.getColumna()).getEstado() == Celda.EstadoCelda.MARCADA) {
+            return;
+        }
+
+        if (this.tablero.getCelda(p.getFila(), p.getColumna()).tieneBomba()) {
+            this.tablero.getCelda(p.getFila(), p.getColumna()).setEstado(Celda.EstadoCelda.DESCUBIERTA);
+            this.descubiertas++;
+            this.estado = EstadoJuego.PERDIDO;
+            return;
+        }
+
+        if (!this.tablero.getCelda(p.getFila(), p.getColumna()).tieneBomba() && this.tablero.getCelda(p.getFila(), p.getColumna()).getBombasCircundantes() > 0) {
+            this.tablero.getCelda(p.getFila(), p.getColumna()).setEstado(Celda.EstadoCelda.DESCUBIERTA);
+            this.descubiertas++;
+
+            if (celdasSeguras == descubiertas) {
+                this.estado = EstadoJuego.GANADO;
+            }
+
+            return;
+        }
+
+        if (!this.tablero.getCelda(p.getFila(), p.getColumna()).tieneBomba() && this.tablero.getCelda(p.getFila(), p.getColumna()).getBombasCircundantes() == 0) {
+            tope++;
+            pendientesPorDescubrir[tope] = p;
+
+            Posicion posicion;
+
+            this.tablero.getCelda(p.getFila(), p.getColumna()).setEstado(Celda.EstadoCelda.DESCUBIERTA);
+            descubiertas++;
+
+            while (tope >= 0) {
+                posicion = pendientesPorDescubrir[tope];
+                this.tope--;
+
+                if (celdasSeguras == descubiertas) {
+                    this.estado = EstadoJuego.GANADO;
+                    return;
+                }
+
+                if (getMinasCircundantes(posicion) == 0) {
+                    for (int x = -1; x <= 1; x++) {
+                        for (int y = -1; y <= 1; y++) {
+                            byte fila = (byte) (posicion.getFila() + x);
+                            byte columna = (byte) (posicion.getColumna() + y);
+
+                            if (x == 0 && y == 0) {
+                                continue;
+                            }
+
+                            if (this.tablero.esPosicionValida(fila, columna) && getEstadoCelda(new Posicion(fila, columna)) == Celda.EstadoCelda.OCULTA) {
+                                this.tablero.getCelda(fila, columna).setEstado(Celda.EstadoCelda.DESCUBIERTA);
+                                descubiertas++;
+                                tope++;
+                                pendientesPorDescubrir[tope] = new Posicion(fila, columna);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -154,7 +241,10 @@ public class Juego {
      * @param p La posición de la celda que se pretende marcar.
      */
     public void marcar(Posicion p) {
-
+        if (this.tablero.esPosicionValida(p.getFila(), p.getColumna()) && this.tablero.getCelda(p.getFila(), p.getColumna()).getEstado() == Celda.EstadoCelda.OCULTA) {
+            this.tablero.getCelda(p.getFila(), p.getColumna()).setEstado(Celda.EstadoCelda.MARCADA);
+            this.marcadas++;
+        }
     }
     
     /**
@@ -165,7 +255,10 @@ public class Juego {
      * @param p La posición de la celda a desmarcar.
      */
     public void desmarcar(Posicion p) {
-
+        if (this.tablero.esPosicionValida(p.getFila(), p.getColumna()) && this.tablero.getCelda(p.getFila(), p.getColumna()).getEstado() == Celda.EstadoCelda.MARCADA) {
+            this.tablero.getCelda(p.getFila(), p.getColumna()).setEstado(Celda.EstadoCelda.OCULTA);
+            this.marcadas--;
+        }
     }
  
     /**
@@ -176,7 +269,24 @@ public class Juego {
      * @return La cantidad de circundantes marcadas para la celda en la posición p.
      */
     public int getCircundantesMarcadas(Posicion p) {
+        int cantidadCeldasMarcadas = 0;
 
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                byte fila = (byte) (p.getFila() + i);
+                byte columna = (byte) (p.getColumna() + j);
+
+                if (i == 0 && j == 0) {
+                    continue;
+                } else if (this.tablero.esPosicionValida(fila, columna)) {
+                    if (this.tablero.getCelda(fila, columna).getEstado() == Celda.EstadoCelda.MARCADA) {
+                        cantidadCeldasMarcadas++;
+                    }
+                }
+            }
+        }
+
+        return cantidadCeldasMarcadas;
     }
     
     /**
@@ -188,26 +298,90 @@ public class Juego {
      * @return La cantidad de celdas no descubiertas.
      */
     public int getCircundantesNoDescubiertas(Posicion p) {
+        int cantidadCeldasOcultas = 0;
 
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                byte fila = (byte) (p.getFila() + i);
+                byte columna = (byte) (p.getColumna() + j);
+
+                if (i == 0 && j == 0) {
+                    continue;
+                } else if (this.tablero.esPosicionValida(fila, columna)) {
+                    if (this.tablero.getCelda(fila, columna).getEstado() != Celda.EstadoCelda.DESCUBIERTA) {
+                        cantidadCeldasOcultas++;
+                    }
+                }
+            }
+        }
+
+        return cantidadCeldasOcultas;
     }
     
     /**
      * Esta acción se lleva a cabo solo si la posición es correcta y si la
     celda en cuestión ya está descubierta. La cantidad de celdas
-    circundantes OCULTAS o MARCADAS sebe ser igual a la cantidad de minas
+    circundantes OCULTAS o MARCADAS debe ser igual a la cantidad de minas
     alrededor de esta celda. Todas las celdas circundantes quedan
     marcadas.
      * @param p La posición de la celda cuyas circundantes se desea marcar.
      */
     public void marcarCircundantes(Posicion p) {
+        int celdasNoDescubiertas = getCircundantesNoDescubiertas(p);
+        int minasAlrededor = getMinasCircundantes(p);
 
+        if (this.tablero.esPosicionValida(p.getFila(), p.getColumna()) && this.tablero.getCelda(p.getFila(), p.getColumna()).getEstado() == Celda.EstadoCelda.DESCUBIERTA) {
+            if (celdasNoDescubiertas == minasAlrededor) {
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        byte fila = (byte) (p.getFila() + i);
+                        byte columna = (byte) (p.getColumna() + j);
+
+                        if (this.tablero.esPosicionValida(fila, columna) && this.tablero.getCelda(fila, columna).getEstado() == Celda.EstadoCelda.OCULTA) {
+                            marcar(new Posicion(fila, columna));
+                        }
+                    }
+                }
+            }
+        }
     }
-    
+
     /**
      * Aplica la acción Descubrir sobre una celda al azar del tablero, que
         aún esté OCULTA y que además no tenga mina (bomba).
      */
     public void descubrirSegura() {
+        Random n =  new Random();
+        boolean encontroSegura = false;
 
+        while (!encontroSegura) {
+            int fila = n.nextInt(getFilas());
+            int columna = n.nextInt(getColumnas());
+
+            if (this.tablero.getCelda((byte) fila, (byte) columna).getEstado() == Celda.EstadoCelda.OCULTA && !tieneBomba(new Posicion((byte) fila, (byte) columna))) {
+                descubrir(new Posicion((byte) fila, (byte) columna));
+                encontroSegura = true;
+            }
+        }
+    }
+
+    /**
+     * Se encargaría de repartir todas las minas al azar por el tablero.
+     */
+    private void repartirMinas() {
+        Random n =  new Random();
+        int minas = 0;
+
+        while (minas < bombas) {
+            int fila = n.nextInt(getFilas());
+            int columna = n.nextInt(getColumnas());
+
+            if (tieneBomba(new Posicion((byte) fila, (byte) columna))) {
+                continue;
+            }
+
+            this.tablero.asignarBomba(true, (byte) fila, (byte) columna);
+            minas++;
+        }
     }
 }
