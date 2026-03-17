@@ -193,15 +193,18 @@ public class Juego {
         }
 
         if (!this.tablero.getCelda(p.getFila(), p.getColumna()).tieneBomba() && this.tablero.getCelda(p.getFila(), p.getColumna()).getBombasCircundantes() == 0) {
+            //aumentamos el tope para añadir la celda actual al nuevo arreglo que están pendientes por descubrir
             tope++;
             pendientesPorDescubrir[tope] = p;
 
             Posicion posicion;
 
+            //después de añadir la celda actual, la marcamos como descubierta y aumentamos el contador de descubiertas en 1
             this.tablero.getCelda(p.getFila(), p.getColumna()).setEstado(Celda.EstadoCelda.DESCUBIERTA);
             descubiertas++;
 
             while (tope >= 0) {
+                //igualamos el auxiliar posicion a lo que pertenezca pendientesPorDescubrir con su tope y disminuimos el tope en 1
                 posicion = pendientesPorDescubrir[tope];
                 this.tope--;
 
@@ -210,6 +213,7 @@ public class Juego {
                     return;
                 }
 
+                //si no hay minas alrededor, verificamos las celdas vecinas
                 if (getMinasCircundantes(posicion) == 0) {
                     for (int x = -1; x <= 1; x++) {
                         for (int y = -1; y <= 1; y++) {
@@ -220,6 +224,8 @@ public class Juego {
                                 continue;
                             }
 
+                            //solo si las vecinas están en posición válida y están sin marcar, las marcamos como descubiertas, aumentamos el tope en 1
+                            //y añadimos la vecina al mismo ciclo
                             if (this.tablero.esPosicionValida(fila, columna) && getEstadoCelda(new Posicion(fila, columna)) == Celda.EstadoCelda.OCULTA) {
                                 this.tablero.getCelda(fila, columna).setEstado(Celda.EstadoCelda.DESCUBIERTA);
                                 descubiertas++;
