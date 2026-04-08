@@ -1,4 +1,4 @@
-package motor;
+package com.ricarditodev.mastermindV4.src.main.java.motor;
 
 /**
  * Representa el historial de códigos y notas (RegistroNota) almacenados durante
@@ -14,16 +14,17 @@ public class Historia {
     /**
      * Crea una nueva historia vacía.
      */
-    public Historia(){
-
+    public Historia() {
+        this.tope = 0;
+        this.info = new RegistroNota[tope];
     }
     
     /**
      * Indica si la historia es vacía (no contiene ningún registro).
      * @return TRUE si la historia es vacía, FALSE si no lo es.
      */
-    public boolean esVacia(){
-
+    public boolean esVacia() {
+        return this.info.length == 0;
     }
     
     /**
@@ -33,16 +34,26 @@ public class Historia {
      * @param buenos Los buenos que este código recibió como nota.
      * @param regulares Los regulares que este código recibió como nota.
      */
-    public void registrar(char[] codigo, int buenos, int regulares){
+    public void registrar(char[] codigo, int buenos, int regulares) {
+        RegistroNota[] nuevoArray = new RegistroNota[tope + 1];
 
+        for (int i = 0; i < tope; i++) {
+            nuevoArray[i] = info[i];
+        }
+
+        nuevoArray[tope] = new RegistroNota(codigo, buenos, regulares);
+
+        this.info = nuevoArray;
+
+        tope++;
     }
     
     /**
      * Retorna la cantidad de registros contenidos en la historia.
      * @return La cantidad de registros en la historia, o cero si está vacía.
      */
-    public int cantidad(){
-
+    public int cantidad() {
+        return this.tope;
     }
     
     /**
@@ -52,8 +63,8 @@ public class Historia {
      * @param indice El índice para el cual se quiere obtener el código.
      * @return El registro en la posicíon indice.
      */
-    public RegistroNota obtenerRegistro(int indice){
-
+    public RegistroNota obtenerRegistro(int indice) {
+        return this.info[indice];
     }
     
     /**
@@ -61,7 +72,7 @@ public class Historia {
      * @param indice El índice a evaluar.
      * @return TRUE si el índice es válido, FALSE si no lo es.
      */
-    public boolean esIndiceValido(int indice){
-
+    public boolean esIndiceValido(int indice) {
+        return indice >= 0 && indice < cantidad();
     }
 }
