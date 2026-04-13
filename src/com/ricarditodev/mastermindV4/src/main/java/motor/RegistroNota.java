@@ -1,4 +1,4 @@
-package com.ricarditodev.mastermindV4.src.main.java.motor;
+package motor;
 
 /**
  * Representa el registro de una nota en el juego (buenos y regulares) asociadas
