@@ -1,4 +1,4 @@
-package com.ricarditodev.mastermindV4.src.main.java.motor;
+package motor;
 
 /**
  * Representa el historial de códigos y notas (RegistroNota) almacenados durante
