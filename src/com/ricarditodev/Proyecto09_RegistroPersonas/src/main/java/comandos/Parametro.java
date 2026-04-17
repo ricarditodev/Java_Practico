@@ -5,7 +5,7 @@ package comandos;
  * @author KA EduSoft
  */
 public class Parametro {
-    public static enum Tipo {STRING,ENTERO,DOUBLE}
+    public static enum Tipo {STRING, ENTERO, DOUBLE}
     
     private String valorString;
     private Tipo tipo;
@@ -20,26 +20,26 @@ public class Parametro {
      * y getDouble respectivamente.
      * @param valor El contenido del parámetro.
      */
-    public Parametro(String valor){
-        this.valorString= valor;
+    public Parametro(String valor) {
+        this.valorString = valor;
         
-        try{
-            this.valorEntero= Integer.parseInt(valor);
-            this.tipo= Tipo.ENTERO;
+        try {
+            this.valorEntero = Integer.parseInt(valor);
+            this.tipo = Tipo.ENTERO;
             return;
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             
         }
         
-        try{
-            this.valorDouble= Double.parseDouble(valor);
-            this.tipo= Tipo.DOUBLE;
+        try {
+            this.valorDouble = Double.parseDouble(valor);
+            this.tipo = Tipo.DOUBLE;
             return;
-        }catch(NumberFormatException | NullPointerException ex){
+        } catch (NumberFormatException | NullPointerException ex) {
             
         }
         
-        this.tipo= Tipo.STRING;
+        this.tipo = Tipo.STRING;
     }
     
     /**
@@ -47,7 +47,7 @@ public class Parametro {
      * es int, double o String.
      * @return El contenido del parámetro como un String.
      */
-    public String getString(){
+    public String getString() {
         return this.valorString;
     }
     
@@ -57,7 +57,7 @@ public class Parametro {
      * @return El valor entero del parámetro.
      * @see getTipo()
      */
-    public int getInt(){
+    public int getInt() {
         return this.valorEntero;
     }
     
@@ -67,7 +67,7 @@ public class Parametro {
      * @return El valor double del parámetro.
      * @see getTipo()
      */
-    public double getDouble(){
+    public double getDouble() {
         return this.valorDouble;
     }
     
@@ -80,7 +80,7 @@ public class Parametro {
      * @return ENTERO si se puede obtener el valor como un número; DOUBLE si se
      * puede obtener como double; STRING en cualquier otro caso.
      */
-    public Tipo getTipo(){
+    public Tipo getTipo() {
         return this.tipo;
     }
 }
