@@ -72,8 +72,8 @@ package comandos;
  * @author KA EduSoft
  */
 public class Comando {
-    public static int MAX_PARAM_COMANDO= 25;
-    public static String COMILLA_COMPUESTO= "\"";
+    public static int MAX_PARAM_COMANDO = 25;
+    public static String COMILLA_COMPUESTO = "\"";
     
     private final String nombre;
     private final Parametro[] parametros;
@@ -90,40 +90,44 @@ public class Comando {
      * @param com La cadena de línea de comandos que será usada para generar el comando
      * y sus parámetros.
      */
-    public Comando(String com){
+    public Comando(String com) {
         boolean isCompuesto;
         String[] splited = com.trim().split("\\s+");
-        String palabra, nextParam="";
+        String palabra, nextParam = "";
         
-        this.indice= -1;
-        if (splited.length>1) 
-            this.parametros= new Parametro[MAX_PARAM_COMANDO];
-        else
-            this.parametros= null;
-        
-        this.nombre= splited[0];
-        this.tope= -1;
-        isCompuesto=false;
-        for (int i=1; i<splited.length; i++){
-            palabra= splited[i];
-            if (palabra.startsWith(COMILLA_COMPUESTO) && (palabra.endsWith(COMILLA_COMPUESTO))){
-                nextParam= palabra.replace(COMILLA_COMPUESTO, "");
-                isCompuesto= false;
-            } else if (palabra.startsWith(COMILLA_COMPUESTO) && !isCompuesto){
-                isCompuesto= true;
-                nextParam= palabra.replace(COMILLA_COMPUESTO, "");
-            } else if (palabra.endsWith(COMILLA_COMPUESTO) && isCompuesto){
-                isCompuesto= false;
-                nextParam= nextParam+" "+palabra.replace(COMILLA_COMPUESTO, "");
-            } else if (isCompuesto){
-                nextParam= nextParam+" "+palabra;
-            } else if (!isCompuesto){
-                nextParam= palabra;
+        this.indice = -1;
+
+        if (splited.length > 1) {
+            this.parametros = new Parametro[MAX_PARAM_COMANDO];
+        } else {
+            this.parametros = null;
+        }
+
+        this.nombre = splited[0];
+        this.tope = - 1;
+        isCompuesto = false;
+
+        for (int i = 1; i < splited.length; i++) {
+            palabra = splited[i];
+
+            if (palabra.startsWith(COMILLA_COMPUESTO) && (palabra.endsWith(COMILLA_COMPUESTO))) {
+                nextParam = palabra.replace(COMILLA_COMPUESTO, "");
+                isCompuesto = false;
+            } else if (palabra.startsWith(COMILLA_COMPUESTO) && !isCompuesto) {
+                isCompuesto = true;
+                nextParam = palabra.replace(COMILLA_COMPUESTO, "");
+            } else if (palabra.endsWith(COMILLA_COMPUESTO) && isCompuesto) {
+                isCompuesto = false;
+                nextParam = nextParam + " " + palabra.replace(COMILLA_COMPUESTO, "");
+            } else if (isCompuesto) {
+                nextParam = nextParam + " " + palabra;
+            } else if (!isCompuesto) {
+                nextParam = palabra;
             }
 
-            if (!isCompuesto){ 
+            if (!isCompuesto) {
                 this.tope++;
-                this.parametros[this.tope]= new Parametro(nextParam);
+                this.parametros[this.tope] = new Parametro(nextParam);
             }
         }
     }
@@ -132,8 +136,8 @@ public class Comando {
      * Indica si existen parámetros para el comando en cuestión.
      * @return TRUE si hay uno o más parámetros, FALSE si no.
      */
-    public boolean hayParametros(){
-        return this.parametros!=null;
+    public boolean hayParametros() {
+        return this.parametros != null;
     }
     
     /**
@@ -141,15 +145,15 @@ public class Comando {
      * ninguno se retorna 0.
      * @return La cantidad de parámetros del comando.
      */
-    public int getCantidadParametros(){
-        return (this.parametros==null) ? 0: this.tope+1;
+    public int getCantidadParametros() {
+        return (this.parametros == null) ? 0: this.tope + 1;
     }
     
     /**
      * Indica el nombre del comando.
      * @return El nombre del comando.
      */
-    public String getNombre(){
+    public String getNombre() {
         return this.nombre;
     }
     
@@ -158,8 +162,8 @@ public class Comando {
      * @return TRUE si hay al menos un parámetro más por recorrer, FALSE si no
      * lo hay.
      */
-    public boolean hayParametroSiguiente(){
-        return (this.parametros!=null)&&(this.indice<this.tope);
+    public boolean hayParametroSiguiente() {
+        return (this.parametros != null) && (this.indice < this.tope);
     }
     
     /**
@@ -167,8 +171,8 @@ public class Comando {
      * se retorna <b>null</b>.
      * @return El siguiente parámetro a recorrer o <b>null</b> si no hay ninguno.
      */
-    public Parametro siguienteParametro(){
-        if (this.hayParametroSiguiente()){
+    public Parametro siguienteParametro() {
+        if (this.hayParametroSiguiente()) {
             this.indice++;
             return this.parametros[this.indice];
         } else {
@@ -179,8 +183,8 @@ public class Comando {
     /**
      * Resetea el puntero de parámetros para volver a recorrer desde el principio.
      */
-    public void reset(){
-        this.indice=-1;
+    public void reset() {
+        this.indice = -1;
     }
     
     /**
@@ -188,7 +192,17 @@ public class Comando {
      * se retorna null;
      * @return Un arreglo de strings con los parámetros, null si no hay ninguno.
      */
-    public String[] getArgs(){
-        return null;
+    public String[] getArgs() {
+        if (!this.hayParametros()) {
+            return null;
+        }
+
+        String[] params  = new String[this.parametros.length];
+
+        for (int i = 0; i < this.parametros.length; i++) {
+            params[i] = this.parametros[i].getString();
+        }
+
+        return params;
     }
 }
