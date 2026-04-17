@@ -12,7 +12,7 @@ public class Producto {
         this.nombre = nombre;
         this.marca = marca;
         this.precio = precio;
-        this.codigo= codigo;
+        this.codigo = codigo;
     }
 
     public String getNombre() {
