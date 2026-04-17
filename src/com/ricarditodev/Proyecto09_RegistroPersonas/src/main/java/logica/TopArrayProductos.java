@@ -11,9 +11,9 @@ public class TopArrayProductos {
     /**
      * Crea una lista vacía con una capacidad máxima igual a DEFAULT_ARRAY_LENGHT.
      */
-    public TopArrayProductos(){
-        this.listaProductos= new Producto[Constantes.DEFAULT_ARRAY_LENGTH];
-        this.tope= -1;
+    public TopArrayProductos() {
+        this.listaProductos = new Producto[Constantes.DEFAULT_ARRAY_LENGTH];
+        this.tope = -1;
     }
     
     /**
@@ -21,10 +21,10 @@ public class TopArrayProductos {
      * capacidad. Si el parámetro es 0 o menor que 0, se establecerá en DEFAULT_ARRAY_LENGTH.
      * @param capacidad La capacidad máxima a asignar a la lista.
      */
-    public TopArrayProductos(int capacidad){
-        capacidad= (capacidad<=0) ? Constantes.DEFAULT_ARRAY_LENGTH : capacidad;
-        this.listaProductos= new Producto[capacidad];
-        this.tope= -1;
+    public TopArrayProductos(int capacidad) {
+        capacidad = (capacidad <= 0) ? Constantes.DEFAULT_ARRAY_LENGTH : capacidad;
+        this.listaProductos = new Producto[capacidad];
+        this.tope = -1;
     }
     
     /**
@@ -35,14 +35,14 @@ public class TopArrayProductos {
      * @param capacidad La capacidad máxima que se asignará a la lista.
      * @param lista Una lista inicial de personas.
      */
-    public TopArrayProductos(int capacidad, Producto... lista){
-        capacidad= (capacidad<lista.length) ? lista.length : capacidad;
-        this.listaProductos= new Producto[capacidad];
-        this.tope= -1;
+    public TopArrayProductos(int capacidad, Producto... lista) {
+        capacidad = (capacidad < lista.length) ? lista.length : capacidad;
+        this.listaProductos = new Producto[capacidad];
+        this.tope = -1;
         
-        for(Producto p: lista){
+        for (Producto p: lista) {
             this.tope++;
-            this.listaProductos[this.tope]= p;
+            this.listaProductos[this.tope] = p;
         }
     }
     
@@ -51,9 +51,9 @@ public class TopArrayProductos {
      * <b>PRECONDICIÓN</b>: La lista no está llena {@link esLlena}
      * @param p La persona a insertar.
      */
-    public void insertar(Producto p){
+    public void insertar(Producto p) {
         this.tope++;
-        this.listaProductos[this.tope]= p;
+        this.listaProductos[this.tope] = p;
     }
     
     /**
@@ -61,7 +61,7 @@ public class TopArrayProductos {
      * <b>PRECONDICION</b>: La lista no está llena {@link esLlena}
      * @param p La persona a insetar.
      */
-    public void insertarInicio(Producto p){
+    public void insertarInicio(Producto p) {
         this.insertarEn(p, 0);
     }
     
@@ -73,21 +73,21 @@ public class TopArrayProductos {
      * @param p La persona a insertar.
      * @param indice La posición en que se insertará p.
      */
-    public void insertarEn(Producto p, int indice){
-        Producto aux[]= new Producto[this.listaProductos.length-1-indice];
+    public void insertarEn(Producto p, int indice) {
+        Producto aux[] = new Producto[this.listaProductos.length - 1 - indice];
         
-        int auxI=0;
-        for(int i= indice; i<=this.tope; i++){
-            aux[auxI]= this.listaProductos[i];
+        int auxI = 0;
+        for (int i = indice; i <= this.tope; i++){
+            aux[auxI] = this.listaProductos[i];
             auxI++;
         }
         
         this.tope++;
         
-        this.listaProductos[indice]= p;
-        auxI=0;
-        for(int i= indice+1; i<=this.tope; i++){
-            this.listaProductos[i]= aux[auxI];
+        this.listaProductos[indice] = p;
+        auxI = 0;
+        for (int i = indice + 1; i <= this.tope; i++){
+            this.listaProductos[i] = aux[auxI];
             auxI++;
         }
     }
@@ -96,7 +96,7 @@ public class TopArrayProductos {
      * Indica la capacidad máxima de la lista.
      * @return La capacidad máxima de la lista.
      */
-    public int getCapacidad(){
+    public int getCapacidad() {
         return this.listaProductos.length;
     }
     
@@ -104,8 +104,8 @@ public class TopArrayProductos {
      * Indica la cantidad de personas almacenadas hasta el momento.
      * @return La cantidad de personas almacenadas.
      */
-    public int getCantidad(){
-        return this.tope+1;
+    public int getCantidad() {
+        return this.tope + 1;
     }
     
     /**
@@ -114,7 +114,7 @@ public class TopArrayProductos {
      * @param indice El índice de la persona buscada.
      * @return La persona en el índice indicado.
      */
-    public Producto getProducto(int indice){
+    public Producto getProducto(int indice) {
         return this.listaProductos[indice];
     }
     
@@ -124,24 +124,24 @@ public class TopArrayProductos {
      * @param indice El índice a validar.
      * @return TRUE si el índice es válido, FALSE si no lo es.
      */
-    public boolean esIndiceValido(int indice){
-        return (indice>=0) && (indice<=this.tope);
+    public boolean esIndiceValido(int indice) {
+        return (indice >= 0) && (indice <= this.tope);
     }
     
     /**
      * Indica si la lista está completa.
      * @return TRUE si está llena y ya no se pueden agregar personas, FALSE si no.
      */
-    public boolean esLlena(){
-        return this.tope==this.listaProductos.length-1;
+    public boolean esLlena() {
+        return this.tope == this.listaProductos.length - 1;
     }
     
     /**
      * Indica si la lista está vacía.
      * @return TRUE si la lista está vacía, FALSE si no.
      */
-    public boolean esVacia(){
-        return this.tope==-1;
+    public boolean esVacia() {
+        return this.tope == -1;
     }
     
     /**
@@ -149,9 +149,9 @@ public class TopArrayProductos {
      * <b>PRECONDICIÓN</b>: La lista no está vacía {@link esVacia}.
      * @return La persona quitada.
      */
-    public Producto quitarUltima(){
-        Producto p= this.listaProductos[this.tope];
-        this.listaProductos[this.tope]= null;
+    public Producto quitarUltima() {
+        Producto p = this.listaProductos[this.tope];
+        this.listaProductos[this.tope] = null;
         this.tope--;
         return p;
     }
@@ -162,13 +162,13 @@ public class TopArrayProductos {
      * @param indice El índice desde el cual se quitará la persona.
      * @return La persona quitada.
      */
-    public Producto quitarEn(int indice){
-        Producto p= this.listaProductos[indice];
+    public Producto quitarEn(int indice) {
+        Producto p = this.listaProductos[indice];
         
-        for (int i=indice; i<this.tope; i++){
-            this.listaProductos[i]= this.listaProductos[i+1];
+        for (int i = indice; i < this.tope; i++){
+            this.listaProductos[i] = this.listaProductos[i + 1];
         }
-        this.listaProductos[this.tope]= null;
+        this.listaProductos[this.tope] = null;
         this.tope--;
         
         return p;
@@ -179,7 +179,7 @@ public class TopArrayProductos {
      * <b>PRECONDICIÓN:</b> La lista no está vacía {@link esVacia}.
      * @return  La persona quitada.
      */
-    public Producto quitarPrimera(){
+    public Producto quitarPrimera() {
         return this.quitarEn(0);
     }
 }
