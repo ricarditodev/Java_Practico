@@ -25,7 +25,7 @@ public class Cliente {
         this.apellido = apellido;
         this.documento = documento;
         this.numero = numero;
-        this.direccion= "";
+        this.direccion = "";
     }
 
     /**
