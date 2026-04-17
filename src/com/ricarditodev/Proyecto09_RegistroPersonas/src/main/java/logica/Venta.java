@@ -17,8 +17,8 @@ public class Venta {
         this.cantidad = cantidad;
     }
 
-    public double getMonto(){
-        return this.producto.getPrecio()*this.cantidad;
+    public double getMonto() {
+        return this.producto.getPrecio() * this.cantidad;
     }
 
     public String getCodigo() {
